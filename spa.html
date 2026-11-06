@@ -1,0 +1,1135 @@
+<!DOCTYPE html>
+<html lang="en" class="dark">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Emotion & Style AI - Multimodal Platform</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Playfair+Display:ital,wght@1,600&display=swap" rel="stylesheet">
+  <style>
+    body {
+      font-family: 'Inter', sans-serif;
+      background-color: #05050a;
+    }
+    .brand-logo-font {
+      font-family: 'Playfair Display', serif;
+      font-style: italic;
+    }
+    .enterprise-card {
+      background: rgba(13, 13, 22, 0.85);
+      backdrop-filter: blur(12px);
+      border: 1px solid rgba(255, 255, 255, 0.08);
+      transition: border-color 0.2s ease-in-out;
+    }
+    .enterprise-card-interactive {
+      background: rgba(13, 13, 22, 0.85);
+      backdrop-filter: blur(12px);
+      border: 1px solid rgba(255, 255, 255, 0.08);
+      transition: all 0.2s ease-in-out;
+    }
+    .enterprise-card-interactive:hover {
+      border-color: rgba(139, 92, 246, 0.4);
+      transform: translateY(-2px);
+    }
+    .btn-neon {
+      background: #7c3aed;
+      color: #ffffff;
+      transition: all 0.2s ease;
+    }
+    .btn-neon:hover {
+      background: #6d28d9;
+      box-shadow: 0 0 20px rgba(124, 58, 237, 0.4);
+    }
+    .glow-sphere {
+      position: absolute;
+      border-radius: 9999px;
+      filter: blur(140px);
+      pointer-events: none;
+      z-index: 0;
+    }
+    .glow-purple {
+      box-shadow: 0 0 20px rgba(124, 58, 237, 0.4);
+    }
+    
+    /* SCANNER BEAM ANIMATION FOR F4 */
+    @keyframes scanline {
+      0% { top: 5%; opacity: 0.9; }
+      50% { opacity: 0.4; }
+      100% { top: 92%; opacity: 0.9; }
+    }
+    .scan-beam {
+      position: absolute;
+      left: 0;
+      right: 0;
+      height: 3px;
+      background: linear-gradient(90deg, transparent, #c084fc, #a855f7, transparent);
+      box-shadow: 0 0 18px #a855f7;
+      animation: scanline 3s ease-in-out infinite alternate;
+      z-index: 25;
+    }
+
+    /* STRICT VIEW ISOLATION ENGINE */
+    .spa-view {
+      display: none !important;
+    }
+    .spa-view.active {
+      display: block !important;
+    }
+    /* Grid layout enforcement for 2-column studio views */
+    #view-f3.active,
+    #view-f4.active {
+      display: grid !important;
+    }
+    /* Centered flex layout enforcement for login and sign up views */
+    #view-f5.active,
+    #view-f6.active {
+      display: flex !important;
+      justify-content: center !important;
+      align-items: center !important;
+      width: 100% !important;
+      min-height: calc(100vh - 10rem) !important;
+    }
+  </style>
+</head>
+<body class="text-slate-100 min-h-screen flex flex-col justify-between relative overflow-x-hidden selection:bg-purple-600 selection:text-white">
+
+  <!-- Ambient Glow Backgrounds -->
+  <div class="glow-sphere top-[-80px] left-[-50px] w-[650px] h-[650px] bg-purple-900/30"></div>
+  <div class="glow-sphere top-[25%] right-[-100px] w-[550px] h-[550px] bg-indigo-900/25"></div>
+  <div class="glow-sphere bottom-[-50px] left-[10%] w-[600px] h-[600px] bg-purple-950/40"></div>
+
+  <!-- Global Diagnostic Toast Notification -->
+  <div id="error-toast" class="fixed top-20 right-8 z-50 hidden transition-all duration-300">
+    <div class="bg-rose-950/90 border border-rose-500/40 text-rose-200 px-4 py-3 rounded-xl shadow-2xl backdrop-blur-md flex items-center space-x-3 text-xs max-w-sm">
+      <svg class="w-5 h-5 text-rose-400 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+      <div>
+        <p class="font-bold text-rose-100" id="error-title">Image Ingestion Failed</p>
+        <p class="text-[11px] text-rose-300/90 mt-0.5" id="error-desc">Invalid format or no face detected. Please upload a clear front-facing portrait.</p>
+      </div>
+      <button onclick="dismissToast()" class="text-rose-400 hover:text-white font-bold ml-2">✕</button>
+    </div>
+  </div>
+
+  <!-- Global Navigation Header -->
+  <header class="sticky top-0 z-50 bg-[#05050a]/90 backdrop-blur-md border-b border-white/10">
+    <div class="max-w-[1600px] mx-auto px-8 h-16 flex items-center justify-between relative z-10">
+      
+      <!-- Brand Logo -->
+      <div class="flex items-center space-x-8">
+        <a href="#f1" class="text-xl font-bold tracking-tight text-white flex items-center gap-1.5">
+          <span>Emotion &</span>
+          <span class="brand-logo-font text-purple-400 text-2xl font-normal">Style</span>
+          <span class="text-xs font-mono px-1.5 py-0.5 rounded bg-purple-950/80 border border-purple-500/30 text-purple-300">AI</span>
+        </a>
+
+        <nav class="hidden md:flex space-x-6 text-xs font-medium text-slate-400">
+          <a href="#f1" class="hover:text-white transition-colors">Home</a>
+          <a href="#f2" class="hover:text-white transition-colors">Workspaces</a>
+          <a href="#f3" class="hover:text-white transition-colors">Emotion Studio</a>
+          <a href="#f4" class="hover:text-white transition-colors">Fashion & Grooming</a>
+          <a href="#f7" class="hover:text-white transition-colors">About</a>
+        </nav>
+      </div>
+
+      <!-- Action Buttons (Managed Dynamically by JS) -->
+      <div id="nav-auth-container" class="flex items-center space-x-3">
+        <a href="#f6" class="px-4 py-2 rounded-lg bg-white/5 hover:bg-white/10 border border-white/10 text-xs font-medium text-slate-200 transition-all">
+          Log In
+        </a>
+        <a href="#f5" class="px-4 py-2 rounded-lg btn-neon text-xs font-semibold shadow-md">
+          Sign Up
+        </a>
+      </div>
+    </div>
+  </header>
+
+  <!-- MAIN SPA CONTENT WRAPPER -->
+  <main class="flex-1 max-w-[1600px] w-full mx-auto px-8 py-8 relative z-10">
+
+    <!-- VIEW F1: HOME LANDING -->
+    <section id="view-f1" class="spa-view active space-y-12">
+      <div class="flex flex-col lg:flex-row items-center justify-between gap-12 pt-4">
+        <div class="lg:w-7/12 space-y-6 text-left">
+          <div class="inline-flex items-center space-x-2 px-3 py-1 rounded-md bg-purple-950/60 border border-purple-500/40 text-purple-300 text-xs font-medium tracking-wide">
+            <span class="w-1.5 h-1.5 rounded-full bg-purple-400 animate-pulse"></span>
+            <span>Live Emotion Detection & Fashion AI</span>
+          </div>
+          
+          <h1 class="text-4xl sm:text-6xl font-extrabold tracking-tight text-white leading-tight">
+            Precision Facial Analytics & <br>
+            <span class="brand-logo-font text-purple-400 font-normal">Intelligent Grooming</span>
+          </h1>
+          
+          <p class="text-slate-100 text-base max-w-2xl leading-relaxed h-14 flex items-center">
+            <span id="hero-typewriter-text" class="brand-logo-font italic font-normal border-r-2 border-purple-400 pr-1 animate-pulse text-lg sm:text-xl text-slate-100"></span>
+          </p>
+
+          <div class="pt-2">
+            <a id="hero-main-cta" href="#f2" 
+               class="inline-flex px-8 py-3.5 rounded-lg btn-neon text-xs font-bold tracking-wide shadow-lg items-center gap-2 cursor-pointer transition-all">
+              <span>Open Workspaces</span>
+              <span>→</span>
+            </a>
+          </div>
+        </div>
+
+        <div id="hero-right-panel" class="lg:w-5/12 w-full max-w-md"></div>
+      </div>
+
+      <!-- Workspace Cards -->
+      <div class="space-y-6 pt-10 border-t border-white/10">
+        <div class="flex items-center justify-between">
+          <div>
+            <h2 class="text-2xl font-bold text-white tracking-tight">Select Workspace Module</h2>
+            <p class="text-xs text-slate-400 mt-1">Choose between live computer vision telemetry or conversational fashion AI.</p>
+          </div>
+        </div>
+
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-8">
+          <!-- Emotion Detection Card -->
+          <div class="enterprise-card-interactive rounded-2xl p-8 flex items-center justify-between min-h-[240px] gap-6">
+            <div class="space-y-3 flex-1">
+              <h3 class="text-2xl font-bold text-white tracking-tight">
+                <span>Live Emotion</span>
+                <span class="brand-logo-font text-purple-400 font-normal ml-1">Detection</span>
+              </h3>
+              <p class="text-xs text-slate-400 leading-relaxed max-w-md">
+                Frame-by-frame facial analysis powered by OpenCV and PyTorch. Capture webcam feeds or upload image files to compute confidence scores.
+              </p>
+              <div class="pt-4">
+                <a href="#f3" class="inline-flex items-center space-x-2 text-xs font-semibold text-purple-400 hover:text-purple-300 transition-colors">
+                  <span>Start Now</span>
+                  <span>→</span>
+                </a>
+              </div>
+            </div>
+
+            <div class="w-32 h-32 sm:w-36 sm:h-36 rounded-xl border border-white/10 overflow-hidden bg-[#05050a] flex-shrink-0 shadow-xl flex items-center justify-center p-3 relative group">
+              <div class="absolute inset-0 bg-purple-600/10 rounded-xl filter blur-md group-hover:bg-purple-600/20 transition-all"></div>
+              <svg viewBox="0 0 300 200" class="w-full h-full relative z-10 filter drop-shadow-[0_0_12px_rgba(192,132,252,0.4)]">
+                <defs>
+                  <linearGradient id="amp-split-ed" x1="0%" y1="0%" x2="100%" y2="0%">
+                    <stop offset="50%" stop-color="#FFFFFF" />
+                    <stop offset="50%" stop-color="#C084FC" />
+                  </linearGradient>
+                </defs>
+                <text x="30" y="130" font-family="'Inter', sans-serif" font-weight="800" font-size="100" fill="#FFFFFF">E</text>
+                <text x="110" y="130" font-family="'Playfair Display', serif" font-style="italic" font-size="95" fill="url(#amp-split-ed)">&amp;</text>
+                <text x="190" y="130" font-family="'Playfair Display', serif" font-style="italic" font-weight="600" font-size="100" fill="#C084FC">D</text>
+              </svg>
+            </div>
+          </div>
+
+          <!-- Fashion Card -->
+          <div class="enterprise-card-interactive rounded-2xl p-8 flex items-center justify-between min-h-[240px] gap-6">
+            <div class="space-y-3 flex-1">
+              <h3 class="text-2xl font-bold text-white tracking-tight">
+                <span>Fashion &</span>
+                <span class="brand-logo-font text-purple-400 font-normal ml-1">Styling</span>
+              </h3>
+              <p class="text-xs text-slate-400 leading-relaxed max-w-md">
+                Conversational style assistant integrated with Google Gemini. Receive contextual wardrobe advice, hair and grooming recommendations.
+              </p>
+              <div class="pt-4">
+                <a href="#f4" class="inline-flex items-center space-x-2 text-xs font-semibold text-purple-400 hover:text-purple-300 transition-colors">
+                  <span>Start Now</span>
+                  <span>→</span>
+                </a>
+              </div>
+            </div>
+
+            <div class="w-32 h-32 sm:w-36 sm:h-36 rounded-xl border border-white/10 overflow-hidden bg-[#05050a] flex-shrink-0 shadow-xl flex items-center justify-center p-3 relative group">
+              <div class="absolute inset-0 bg-purple-600/10 rounded-xl filter blur-md group-hover:bg-purple-600/20 transition-all"></div>
+              <svg viewBox="0 0 300 200" class="w-full h-full relative z-10 filter drop-shadow-[0_0_12px_rgba(192,132,252,0.4)]">
+                <defs>
+                  <linearGradient id="amp-split-fs" x1="0%" y1="0%" x2="100%" y2="0%">
+                    <stop offset="50%" stop-color="#FFFFFF" />
+                    <stop offset="50%" stop-color="#C084FC" />
+                  </linearGradient>
+                </defs>
+                <text x="30" y="130" font-family="'Inter', sans-serif" font-weight="800" font-size="100" fill="#FFFFFF">F</text>
+                <text x="110" y="130" font-family="'Playfair Display', serif" font-style="italic" font-size="95" fill="url(#amp-split-fs)">&amp;</text>
+                <text x="190" y="130" font-family="'Playfair Display', serif" font-style="italic" font-weight="600" font-size="100" fill="#C084FC">S</text>
+              </svg>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Static Workflow Overview -->
+      <div id="workflow" class="enterprise-card rounded-2xl p-8 border border-white/10 mt-4 cursor-default">
+        <div class="border-b border-white/10 pb-4 mb-6">
+          <h3 class="text-sm font-bold text-white tracking-wide uppercase">System Analytics Architecture & Processing Pipeline</h3>
+          <p class="text-xs text-slate-400 mt-1">A structured overview of how our platform processes camera streams and provides intelligent grooming insights.</p>
+        </div>
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-8 text-left">
+          <div class="space-y-2">
+            <div class="text-xs font-mono text-purple-400 font-bold tracking-wider uppercase pb-1 border-b border-purple-500/20">Step 01 — Optical Capture</div>
+            <h4 class="text-sm font-semibold text-white">Live Feed & File Ingestion</h4>
+            <p class="text-xs text-slate-400 leading-relaxed">The frontend connects directly to browser webcam APIs or accepts image uploads. Real-time frame matrices are constructed and verified.</p>
+          </div>
+          <div class="space-y-2">
+            <div class="text-xs font-mono text-purple-400 font-bold tracking-wider uppercase pb-1 border-b border-purple-500/20">Step 02 — Neural Scoring</div>
+            <h4 class="text-sm font-semibold text-white">PyTorch Inference Engine</h4>
+            <p class="text-xs text-slate-400 leading-relaxed">Captured image tensors are processed through a FastAPI backend. Models execute facial keypoint detection and generate emotional distributions.</p>
+          </div>
+          <div class="space-y-2">
+            <div class="text-xs font-mono text-purple-400 font-bold tracking-wider uppercase pb-1 border-b border-purple-500/20">Step 03 — Multimodal Response</div>
+            <h4 class="text-sm font-semibold text-white">Gemini Style Synthesis</h4>
+            <p class="text-xs text-slate-400 leading-relaxed">Emotional state telemetry is combined with user visual prompts inside Gemini LLM pipelines, producing tailored fashion advice.</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- VIEW F2: WORKSPACE SELECTOR -->
+    <section id="view-f2" class="spa-view space-y-10 py-8">
+      <div class="text-left space-y-2 border-b border-white/10 pb-6">
+        <div class="inline-flex items-center space-x-2 px-3 py-1 rounded-md bg-purple-950/60 border border-purple-500/40 text-purple-300 text-xs font-medium tracking-wide">
+          <span class="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse"></span>
+          <span>Active Console</span>
+        </div>
+        <h1 class="text-4xl sm:text-5xl font-extrabold text-white tracking-tight">
+          Select Your <span class="brand-logo-font text-purple-400 font-normal">AI Module</span>
+        </h1>
+        <p class="text-slate-400 text-xs max-w-xl">
+          Choose a specialized workspace to initiate your session. You can switch between modules at any time.
+        </p>
+      </div>
+
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+        <div class="enterprise-card rounded-2xl p-10 flex flex-col justify-between min-h-[300px] border border-purple-500/20">
+          <div class="space-y-4">
+            <div class="w-12 h-12 rounded-xl bg-purple-950/80 border border-purple-500/30 flex items-center justify-center text-purple-400">
+              <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M15 10l4.553-2.276A1 1 0 0121 8.618v6.764a1 1 0 01-1.447.894L15 14M5 18h8a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v8a2 2 0 002 2z"/></svg>
+            </div>
+            <h2 class="text-3xl font-bold text-white tracking-tight">
+              <span>Live Emotion</span>
+              <span class="brand-logo-font text-purple-400 font-normal ml-1.5">Detection</span>
+            </h2>
+            <p class="text-xs text-slate-400 leading-relaxed max-w-lg">
+              Access the computer vision camera studio. Stream real-time video frames or upload images to compute frame-by-frame emotion probability distributions.
+            </p>
+          </div>
+          <div class="pt-8">
+            <a href="#f3" class="inline-flex items-center space-x-2 text-xs font-bold text-white bg-purple-600 hover:bg-purple-500 px-6 py-3.5 rounded-xl shadow-lg transition-all glow-purple">
+              <span>Open Emotion Studio</span>
+              <span>→</span>
+            </a>
+          </div>
+        </div>
+
+        <div class="enterprise-card rounded-2xl p-10 flex flex-col justify-between min-h-[300px] border border-purple-500/20">
+          <div class="space-y-4">
+            <div class="w-12 h-12 rounded-xl bg-purple-950/80 border border-purple-500/30 flex items-center justify-center text-purple-400">
+              <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M5 3v4M3 5h4M6 17v4m-2-2h4m5-16l2.286 6.857L21 12l-5.714 2.143L13 21l-2.286-6.857L5 12l5.714-2.143L13 3z"/></svg>
+            </div>
+            <h2 class="text-3xl font-bold text-white tracking-tight">
+              <span>Fashion &</span>
+              <span class="brand-logo-font text-purple-400 font-normal ml-1.5">Styling</span>
+            </h2>
+            <p class="text-xs text-slate-400 leading-relaxed max-w-lg">
+              Launch the interactive Gemini conversational assistant. Receive contextual wardrobe advice, hair and grooming recommendations, and color pairings.
+            </p>
+          </div>
+          <div class="pt-8">
+            <a href="#f4" class="inline-flex items-center space-x-2 text-xs font-bold text-white bg-purple-600 hover:bg-purple-500 px-6 py-3.5 rounded-xl shadow-lg transition-all glow-purple">
+              <span>Launch Fashion Assistant</span>
+              <span>→</span>
+            </a>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- VIEW F3: EMOTION STUDIO -->
+    <section id="view-f3" class="spa-view grid grid-cols-1 lg:grid-cols-12 gap-8 items-stretch">
+      <div class="lg:col-span-7 flex flex-col justify-between space-y-6">
+        <div class="relative w-full flex-1 min-h-[480px] enterprise-card rounded-2xl overflow-hidden flex items-center justify-center border border-white/10 bg-[#080512]">
+          <video id="webcam-feed" class="w-full h-full object-cover hidden" autoplay playsinline muted></video>
+          <img id="uploaded-image-preview-f3" class="w-full h-full object-contain hidden relative z-10 p-4" alt="Uploaded Face Telemetry" />
+
+          <div id="camera-placeholder-f3" class="flex flex-col items-center justify-center p-12 text-center space-y-5">
+            <div class="flex items-center space-x-4">
+              <button onclick="toggleCamera()" class="w-16 h-16 rounded-2xl bg-white/5 border border-white/10 flex flex-col items-center justify-center text-purple-400 hover:text-white hover:border-purple-500/50 hover:bg-white/10 transition-all cursor-pointer shadow-xl">
+                <svg class="w-7 h-7" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M15 10l4.553-2.276A1 1 0 0121 8.618v6.764a1 1 0 01-1.447.894L15 14M5 18h8a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v8a2 2 0 002 2z"/></svg>
+              </button>
+              <span class="text-xs font-semibold text-slate-500 uppercase tracking-wider">OR</span>
+              <label for="image-upload-f3" class="w-16 h-16 rounded-2xl bg-white/5 border border-white/10 flex flex-col items-center justify-center text-purple-400 hover:text-white hover:border-purple-500/50 hover:bg-white/10 transition-all cursor-pointer shadow-xl">
+                <svg class="w-7 h-7" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-8l-4-4m0 0L8 8m4-4v12"/></svg>
+              </label>
+              <input type="file" id="image-upload-f3" accept="image/*" class="hidden" onchange="handleImageUpload(event)" />
+            </div>
+            <div>
+              <h3 class="text-base font-bold text-white tracking-tight">Initialize Telemetry Session</h3>
+              <p class="text-xs text-slate-400 max-w-sm mt-1.5 leading-relaxed">Start live webcam feed or upload an image file for facial expression analysis.</p>
+            </div>
+          </div>
+
+          <div id="live-overlay-f3" class="absolute top-5 left-5 hidden flex-col space-y-2 z-20">
+            <div class="bg-[#05050a]/90 backdrop-blur-md border border-white/10 px-3.5 py-1.5 rounded-xl flex items-center space-x-2 text-xs shadow-lg">
+              <span class="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span>
+              <span class="font-bold text-emerald-400 text-[11px] tracking-wider" id="status-tag-text-f3">LIVE TELEMETRY</span>
+              <span class="text-slate-700">|</span>
+              <button onclick="resetTelemetryView()" class="text-[11px] text-purple-400 hover:text-white font-mono underline">Clear Session</button>
+            </div>
+          </div>
+        </div>
+
+        <!-- Emotion Metrics -->
+        <div class="enterprise-card p-6 rounded-2xl border border-white/10 shadow-2xl">
+          <div class="flex items-center justify-between border-b border-white/10 pb-4 mb-4">
+            <div>
+              <span class="text-[11px] font-semibold text-purple-400 uppercase tracking-widest">Primary Classification</span>
+              <h2 class="text-xl font-bold text-white mt-1 flex items-center space-x-2">
+                <span id="emotion-primary-label">Focused / Neutral</span>
+                <span id="emotion-primary-emoji" class="text-lg">😐</span>
+              </h2>
+            </div>
+            <div class="text-right">
+              <span class="text-[11px] text-slate-400 font-medium">Confidence Score</span>
+              <p id="emotion-confidence" class="text-xl font-extrabold text-purple-400 font-mono">94.8%</p>
+            </div>
+          </div>
+
+          <div class="grid grid-cols-3 gap-4 text-xs">
+            <div>
+              <div class="flex justify-between mb-1.5 font-medium text-slate-300">
+                <span>Focused</span>
+                <span id="emotion-focused_neutral-val" class="text-purple-400 font-mono">94.8%</span>
+              </div>
+              <div class="w-full bg-[#05050a] h-2 rounded-full overflow-hidden border border-white/10">
+                <div id="emotion-focused_neutral-bar" class="bg-purple-600 h-full rounded-full" style="width: 94.8%"></div>
+              </div>
+            </div>
+            <div>
+              <div class="flex justify-between mb-1.5 font-medium text-slate-300">
+                <span>Happy</span>
+                <span id="emotion-happy-val" class="text-slate-400 font-mono">3.2%</span>
+              </div>
+              <div class="w-full bg-[#05050a] h-2 rounded-full overflow-hidden border border-white/10">
+                <div id="emotion-happy-bar" class="bg-emerald-500 h-full rounded-full" style="width: 3.2%"></div>
+              </div>
+            </div>
+            <div>
+              <div class="flex justify-between mb-1.5 font-medium text-slate-300">
+                <span>Sad / Low</span>
+                <span id="emotion-sad_low-val" class="text-slate-400 font-mono">0.0%</span>
+              </div>
+              <div class="w-full bg-[#05050a] h-2 rounded-full overflow-hidden border border-white/10">
+                <div id="emotion-sad_low-bar" class="bg-sky-500 h-full rounded-full" style="width: 0%"></div>
+              </div>
+            </div>
+            <div>
+              <div class="flex justify-between mb-1.5 font-medium text-slate-300">
+                <span>Disgusted</span>
+                <span id="emotion-disgusted_disturbed-val" class="text-slate-400 font-mono">0.0%</span>
+              </div>
+              <div class="w-full bg-[#05050a] h-2 rounded-full overflow-hidden border border-white/10">
+                <div id="emotion-disgusted_disturbed-bar" class="bg-amber-500 h-full rounded-full" style="width: 0%"></div>
+              </div>
+            </div>
+            <div>
+              <div class="flex justify-between mb-1.5 font-medium text-slate-300">
+                <span>Fear</span>
+                <span id="emotion-fear-val" class="text-slate-400 font-mono">1.2%</span>
+              </div>
+              <div class="w-full bg-[#05050a] h-2 rounded-full overflow-hidden border border-white/10">
+                <div id="emotion-fear-bar" class="bg-indigo-500 h-full rounded-full" style="width: 1.2%"></div>
+              </div>
+            </div>
+            <div>
+              <div class="flex justify-between mb-1.5 font-medium text-slate-300">
+                <span>Angry</span>
+                <span id="emotion-angry-val" class="text-slate-400 font-mono">0.8%</span>
+              </div>
+              <div class="w-full bg-[#05050a] h-2 rounded-full overflow-hidden border border-white/10">
+                <div id="emotion-angry-bar" class="bg-rose-500 h-full rounded-full" style="width: 0.8%"></div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Chat Assistant F3 -->
+      <div class="lg:col-span-5 flex flex-col enterprise-card border border-white/10 rounded-2xl shadow-2xl overflow-hidden h-full min-h-[600px]">
+        <div class="bg-white/5 border-b border-white/10 p-4 flex items-center justify-between">
+          <div class="flex items-center space-x-3">
+            <div class="w-8 h-8 rounded-xl bg-purple-950 border border-purple-500/30 flex items-center justify-center font-bold text-purple-300 text-xs shadow-md">EA</div>
+            <div>
+              <h3 class="text-sm font-bold text-white">Emotion Assistant</h3>
+              <p class="text-[11px] text-slate-400">Facial Expression Diagnostics</p>
+            </div>
+          </div>
+        </div>
+
+        <div id="chat-messages-f3" class="flex-1 p-5 overflow-y-auto space-y-4 text-xs">
+          <div class="flex items-start space-x-3 max-w-[88%]">
+            <div class="w-6 h-6 rounded-lg bg-purple-950 border border-purple-500/30 flex items-center justify-center text-[10px] font-bold text-purple-300 shrink-0">EA</div>
+            <div class="bg-[#05050a] border border-white/10 p-3.5 rounded-2xl rounded-tl-none text-slate-200 leading-relaxed shadow-md">
+              Hello. Real-time vision metrics are active. Your facial expression currently classifies as <strong class="text-purple-400 font-semibold">Focused / Neutral (94.8%)</strong>. Ask me any question regarding your emotion telemetry.
+            </div>
+          </div>
+        </div>
+
+        <div class="p-4 bg-white/5 border-t border-white/10">
+          <form onsubmit="handleChatSubmitF3(event)" class="flex items-center space-x-2.5">
+            <input type="text" id="chat-input-f3" placeholder="Ask about your emotion telemetry..." class="flex-1 bg-[#05050a] border border-white/10 focus:border-purple-500 rounded-xl px-4 py-3 text-xs text-white focus:outline-none" required />
+            <button type="submit" class="btn-neon p-3 rounded-xl shadow-md cursor-pointer">
+              <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 19l9-2-9-18-9 18 9-2zm0 0v-8"/></svg>
+            </button>
+          </form>
+        </div>
+      </div>
+    </section>
+
+    <!-- VIEW F4: FASHION & GROOMING STUDIO -->
+    <section id="view-f4" class="spa-view grid grid-cols-1 lg:grid-cols-12 gap-8 items-stretch">
+      <div class="lg:col-span-7 flex flex-col justify-between space-y-6">
+        <div class="relative w-full flex-1 min-h-[480px] enterprise-card rounded-2xl overflow-hidden flex items-center justify-center border border-white/10 group bg-[#080512]">
+          <div id="scanner-line-f4" class="scan-beam hidden"></div>
+
+          <div id="scanner-placeholder-f4" class="flex flex-col items-center justify-center p-12 text-center space-y-5 relative z-10">
+            <label for="image-upload-f4" class="w-20 h-20 rounded-2xl bg-white/5 border border-white/10 flex flex-col items-center justify-center text-purple-400 hover:text-white hover:border-purple-500/50 hover:bg-white/10 transition-all cursor-pointer shadow-xl">
+              <svg class="w-9 h-9" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-8l-4-4m0 0L8 8m4-4v12"/></svg>
+            </label>
+            <div>
+              <h3 class="text-base font-bold text-white tracking-tight">Facial Scanner Offline</h3>
+              <p class="text-xs text-slate-400 max-w-sm mt-1.5 leading-relaxed">Upload a photo to initialize computer vision geometry extraction.</p>
+            </div>
+            <input type="file" id="image-upload-f4" accept="image/*" class="hidden" onchange="handleImageUpload(event)" />
+          </div>
+
+          <img id="uploaded-image-preview-f4" class="w-full h-full object-contain hidden relative z-10 p-4" alt="Uploaded Facial Geometry" />
+
+          <div id="status-tag-f4" class="absolute top-5 left-5 bg-[#05050a]/90 backdrop-blur-md border border-white/10 px-3.5 py-1.5 rounded-xl hidden items-center space-x-2 text-xs shadow-lg z-20">
+            <span class="w-2 h-2 rounded-full bg-purple-400 animate-pulse"></span>
+            <span class="font-bold text-purple-300 text-[11px] tracking-wider" id="status-tag-text-f4">AI GEOMETRY SCANNER ACTIVE</span>
+            <span class="text-slate-700">|</span>
+            <button onclick="resetScannerView()" class="text-[11px] text-purple-400 hover:text-white font-mono underline">Clear Session</button>
+          </div>
+        </div>
+
+        <!-- Face Shape Panel -->
+        <div class="enterprise-card p-6 rounded-2xl border border-white/10 shadow-2xl">
+          <div class="flex items-center justify-between border-b border-white/10 pb-4 mb-4">
+            <div>
+              <span class="text-[11px] font-semibold text-purple-400 uppercase tracking-widest">Detected Face Shape</span>
+              <h2 class="text-xl font-bold text-white mt-1 flex items-center space-x-2">
+                <span id="face-shape-label" class="text-slate-300">Awaiting Photo Ingestion</span>
+                <span id="face-shape-sub" class="text-sm text-slate-500 font-mono">(Upload photo to analyze)</span>
+              </h2>
+            </div>
+            <div>
+              <label for="image-upload-f4" class="inline-flex items-center space-x-2 text-xs font-bold text-white bg-purple-600 hover:bg-purple-500 px-5 py-3 rounded-xl shadow-lg transition-all glow-purple cursor-pointer">
+                <span>Upload Photo</span>
+              </label>
+            </div>
+          </div>
+
+          <div class="grid grid-cols-3 gap-4 text-xs">
+            <div>
+              <div class="flex justify-between mb-1.5 font-medium text-slate-300">
+                <span>Jawline Symmetry</span>
+                <span class="text-purple-400 font-mono" id="jawline-val">--</span>
+              </div>
+              <div class="w-full bg-[#05050a] h-2 rounded-full overflow-hidden border border-white/10">
+                <div id="jawline-bar" class="bg-purple-600 h-full rounded-full transition-all duration-500" style="width: 0%"></div>
+              </div>
+            </div>
+            <div>
+              <div class="flex justify-between mb-1.5 font-medium text-slate-300">
+                <span>Cheekbone Ratio</span>
+                <span class="text-purple-400 font-mono" id="cheek-val">--</span>
+              </div>
+              <div class="w-full bg-[#05050a] h-2 rounded-full overflow-hidden border border-white/10">
+                <div id="cheek-bar" class="bg-fuchsia-500 h-full rounded-full transition-all duration-500" style="width: 0%"></div>
+              </div>
+            </div>
+            <div>
+              <div class="flex justify-between mb-1.5 font-medium text-slate-300">
+                <span>Overall Match</span>
+                <span class="text-purple-400 font-mono" id="match-val">--</span>
+              </div>
+              <div class="w-full bg-[#05050a] h-2 rounded-full overflow-hidden border border-white/10">
+                <div id="match-bar" class="bg-emerald-500 h-full rounded-full transition-all duration-500" style="width: 0%"></div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Chat Assistant F4 -->
+      <div class="lg:col-span-5 flex flex-col enterprise-card border border-white/10 rounded-2xl shadow-2xl overflow-hidden h-full min-h-[600px]">
+        <div class="bg-white/5 border-b border-white/10 p-4 flex items-center justify-between">
+          <div class="flex items-center space-x-3">
+            <div class="w-8 h-8 rounded-xl bg-purple-950 border border-purple-500/30 flex items-center justify-center font-bold text-purple-300 text-xs shadow-md">FA</div>
+            <div>
+              <h3 class="text-sm font-bold text-white">Fashion & Grooming Assistant</h3>
+              <p class="text-[11px] text-slate-400">Gemini LLM Style Synthesis</p>
+            </div>
+          </div>
+        </div>
+
+        <div id="chat-messages-f4" class="flex-1 p-5 overflow-y-auto space-y-4 text-xs">
+          <div class="flex items-start space-x-3 max-w-[88%]">
+            <div class="w-6 h-6 rounded-lg bg-purple-950 border border-purple-500/30 flex items-center justify-center text-[10px] font-bold text-purple-300 shrink-0">FA</div>
+            <div class="bg-[#05050a] border border-white/10 p-3.5 rounded-2xl rounded-tl-none text-slate-200 leading-relaxed shadow-md">
+              Hello! Upload a face photo on the left or use a previously captured session to receive personalized style advice!
+            </div>
+          </div>
+        </div>
+
+        <div class="p-4 bg-white/5 border-t border-white/10">
+          <form onsubmit="handleChatSubmitF4(event)" class="flex items-center space-x-2.5">
+            <input type="text" id="chat-input-f4" placeholder="Ask about haircut, beard, or frame recommendations..." class="flex-1 bg-[#05050a] border border-white/10 focus:border-purple-500 rounded-xl px-4 py-3 text-xs text-white focus:outline-none" required />
+            <button type="submit" class="btn-neon p-3 rounded-xl shadow-md cursor-pointer">
+              <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 19l9-2-9-18-9 18 9-2zm0 0v-8"/></svg>
+            </button>
+          </form>
+        </div>
+      </div>
+    </section>
+
+    <!-- VIEW F5: SIGN UP (DEAD-CENTER ALIGNMENT) -->
+    <section id="view-f5" class="spa-view w-full py-6">
+      <div class="w-full max-w-lg mx-auto">
+        <div class="enterprise-card p-8 rounded-2xl shadow-2xl border border-white/10">
+          <div class="space-y-2 mb-6 text-left">
+            <div class="inline-flex items-center space-x-2 px-3 py-1 rounded-md bg-purple-950/60 border border-purple-500/40 text-purple-300 text-xs font-medium tracking-wide">
+              <span class="w-1.5 h-1.5 rounded-full bg-purple-400"></span>
+              <span>Registration Console</span>
+            </div>
+            <h1 class="text-3xl font-extrabold text-white tracking-tight">Create Account</h1>
+            <p class="text-slate-400 text-xs">Register your profile to access computer vision and style synthesis consoles.</p>
+          </div>
+
+          <form onsubmit="handleSignupSubmit(event)" class="space-y-4">
+            <div>
+              <label class="block text-[11px] font-medium text-slate-300 uppercase tracking-wider mb-1.5">Full Name</label>
+              <input type="text" required placeholder="Lusifer" class="w-full px-3.5 py-2.5 rounded-lg bg-[#05050a]/90 border border-white/10 text-slate-100 focus:outline-none focus:border-purple-500 text-xs" />
+            </div>
+            <div>
+              <label class="block text-[11px] font-medium text-slate-300 uppercase tracking-wider mb-1.5">Email Address</label>
+              <input type="email" required placeholder="ad0257143@gmail.com" class="w-full px-3.5 py-2.5 rounded-lg bg-[#05050a]/90 border border-white/10 text-slate-100 focus:outline-none focus:border-purple-500 text-xs" />
+            </div>
+            <div>
+              <label class="block text-[11px] font-medium text-slate-300 uppercase tracking-wider mb-1.5">Password</label>
+              <input type="password" required placeholder="••••••••••••" class="w-full px-3.5 py-2.5 rounded-lg bg-[#05050a]/90 border border-white/10 text-slate-100 focus:outline-none focus:border-purple-500 text-xs" />
+            </div>
+            <button type="submit" class="w-full py-3 rounded-lg btn-neon text-xs font-bold tracking-wide mt-4 cursor-pointer shadow-lg">
+              Create Account & Open Workspaces →
+            </button>
+          </form>
+
+          <div class="mt-6 border-t border-white/10 pt-5 space-y-2">
+            <p class="text-[11px] text-slate-400 text-center font-medium">Already have an active account?</p>
+            <a href="#f6" class="w-full py-3 rounded-lg bg-white/5 hover:bg-white/10 border border-white/10 text-xs font-semibold text-slate-200 flex items-center justify-center gap-2">
+              <span>Log In to Workspace</span>
+              <span>→</span>
+            </a>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- VIEW F6: LOG IN (DEAD-CENTER ALIGNMENT) -->
+    <section id="view-f6" class="spa-view w-full py-6">
+      <div class="w-full max-w-lg mx-auto">
+        <div class="enterprise-card p-8 rounded-2xl shadow-2xl border border-white/10">
+          <div class="space-y-2 mb-6 text-left">
+            <div class="inline-flex items-center space-x-2 px-3 py-1 rounded-md bg-purple-950/60 border border-purple-500/40 text-purple-300 text-xs font-medium tracking-wide">
+              <span class="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse"></span>
+              <span>Authentication Console</span>
+            </div>
+            <h1 class="text-3xl font-extrabold text-white tracking-tight">Welcome Back</h1>
+            <p class="text-slate-400 text-xs">Enter your credentials to access active AI consoles and session history.</p>
+          </div>
+
+          <form onsubmit="handleLoginSubmit(event)" class="space-y-4">
+            <div>
+              <label class="block text-[11px] font-medium text-slate-300 uppercase tracking-wider mb-1.5">Email Address</label>
+              <input type="email" required placeholder="ad0257143@gmail.com" class="w-full px-3.5 py-2.5 rounded-lg bg-[#05050a]/90 border border-white/10 text-slate-100 focus:outline-none focus:border-purple-500 text-xs" />
+            </div>
+            <div>
+              <label class="block text-[11px] font-medium text-slate-300 uppercase tracking-wider mb-1.5">Password</label>
+              <input type="password" required placeholder="••••••••••••" class="w-full px-3.5 py-2.5 rounded-lg bg-[#05050a]/90 border border-white/10 text-slate-100 focus:outline-none focus:border-purple-500 text-xs" />
+            </div>
+            <button type="submit" class="w-full py-3 rounded-lg btn-neon text-xs font-bold tracking-wide mt-4 cursor-pointer shadow-lg">
+              Authenticate & Open Workspaces →
+            </button>
+          </form>
+
+          <div class="mt-6 border-t border-white/10 pt-5 space-y-2">
+            <p class="text-[11px] text-slate-400 text-center font-medium">Don't have an active account yet?</p>
+            <a href="#f5" class="w-full py-3 rounded-lg bg-white/5 hover:bg-white/10 border border-white/10 text-xs font-semibold text-slate-200 flex items-center justify-center gap-2">
+              <span>Create New Account</span>
+              <span>→</span>
+            </a>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- VIEW F7: ABOUT -->
+    <section id="view-f7" class="spa-view space-y-12 py-8">
+      <div class="text-left space-y-3 border-b border-white/10 pb-8">
+        <div class="inline-flex items-center space-x-2 px-3 py-1 rounded-md bg-purple-950/60 border border-purple-500/40 text-purple-300 text-xs font-medium tracking-wide">
+          <span class="w-1.5 h-1.5 rounded-full bg-purple-400 animate-pulse"></span>
+          <span>Technical Architecture & Pipeline</span>
+        </div>
+        <h1 class="text-4xl sm:text-5xl font-extrabold text-white tracking-tight">
+          High-Performance <span class="brand-logo-font text-purple-400 font-normal">Multimodal Intelligence</span>
+        </h1>
+        <p class="text-slate-400 text-xs max-w-2xl leading-relaxed">
+          Discover the engineering behind Emotion & Style AI—combining PyTorch deep neural networks, real-time computer vision frame extraction, and multimodal Gemini LLM synthesis.
+        </p>
+      </div>
+
+      <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+        <div class="enterprise-card p-6 rounded-2xl flex flex-col justify-between space-y-4">
+          <div class="space-y-3">
+            <div class="w-10 h-10 rounded-xl bg-purple-950/80 border border-purple-500/30 flex items-center justify-center text-purple-400 font-mono text-xs font-bold">01</div>
+            <h3 class="text-lg font-bold text-white">PyTorch Inference</h3>
+            <p class="text-xs text-slate-400 leading-relaxed">Custom Convolutional Neural Network (CNN) trained for frame-by-frame emotion probability distributions.</p>
+          </div>
+          <span class="text-[11px] font-mono text-purple-400">Deep Learning Model</span>
+        </div>
+
+        <div class="enterprise-card p-6 rounded-2xl flex flex-col justify-between space-y-4">
+          <div class="space-y-3">
+            <div class="w-10 h-10 rounded-xl bg-purple-950/80 border border-purple-500/30 flex items-center justify-center text-purple-400 font-mono text-xs font-bold">02</div>
+            <h3 class="text-lg font-bold text-white">FastAPI Backend</h3>
+            <p class="text-xs text-slate-400 leading-relaxed">Asynchronous Python API server managing high-throughput image ingestion and prediction endpoints.</p>
+          </div>
+          <span class="text-[11px] font-mono text-purple-400">Microservice Architecture</span>
+        </div>
+
+        <div class="enterprise-card p-6 rounded-2xl flex flex-col justify-between space-y-4">
+          <div class="space-y-3">
+            <div class="w-10 h-10 rounded-xl bg-purple-950/80 border border-purple-500/30 flex items-center justify-center text-purple-400 font-mono text-xs font-bold">03</div>
+            <h3 class="text-lg font-bold text-white">Computer Vision</h3>
+            <p class="text-xs text-slate-400 leading-relaxed">68-keypoint facial landmark topology tracking jawline angles, cheekbone proportions, and facial symmetry.</p>
+          </div>
+          <span class="text-[11px] font-mono text-purple-400">Topography Extraction</span>
+        </div>
+
+        <div class="enterprise-card p-6 rounded-2xl flex flex-col justify-between space-y-4">
+          <div class="space-y-3">
+            <div class="w-10 h-10 rounded-xl bg-purple-950/80 border border-purple-500/30 flex items-center justify-center text-purple-400 font-mono text-xs font-bold">04</div>
+            <h3 class="text-lg font-bold text-white">Gemini Multimodal LLM</h3>
+            <p class="text-xs text-slate-400 leading-relaxed">Integrated Google Gemini LLM synthesis generating contextual grooming advice and haircut suggestions.</p>
+          </div>
+          <span class="text-[11px] font-mono text-purple-400">Generative Assistant</span>
+        </div>
+      </div>
+    </section>
+
+  </main>
+
+  <!-- Global Corporate Footer -->
+  <footer class="border-t border-white/10 bg-[#05050a]/90 backdrop-blur-md py-6 relative z-10">
+    <div class="max-w-[1600px] mx-auto px-8 flex flex-col sm:flex-row items-center justify-between text-xs text-slate-500 gap-4">
+      <div class="flex items-center space-x-2">
+        <span class="font-bold text-slate-300">Emotion & <span class="brand-logo-font italic font-normal text-purple-400">Style</span> AI</span>
+        <span>© 2026. Built for High-Performance Multimodal Analytics.</span>
+      </div>
+      <div class="flex space-x-6 text-slate-400">
+        <a href="#f7" class="hover:text-white">About System</a>
+        <a href="#" class="hover:text-white">Privacy Policy</a>
+        <a href="#" class="hover:text-white">Terms of Service</a>
+      </div>
+    </div>
+  </footer>
+
+  <!-- INTEGRATED JS CONTROLLER ENGINE -->
+  <script>
+    let pendingRedirectView = null;
+
+    /* ==========================================
+       1. ROUTE GUARD & HASH ROUTER
+       ========================================== */
+    function router() {
+      const hash = window.location.hash || '#f1';
+      const targetRoute = hash.replace('#', '');
+      const isLoggedIn = localStorage.getItem('isLoggedIn') === 'true';
+
+      const protectedRoutes = ['f2', 'f3', 'f4'];
+      
+      if (protectedRoutes.includes(targetRoute) && !isLoggedIn) {
+        pendingRedirectView = targetRoute;
+        window.location.hash = '#f6';
+        return;
+      }
+
+      document.querySelectorAll('.spa-view').forEach(view => view.classList.remove('active'));
+
+      const currentView = document.getElementById(`view-${targetRoute}`);
+      if (currentView) {
+        currentView.classList.add('active');
+      } else {
+        document.getElementById('view-f1').classList.add('active');
+      }
+
+      updateHeaderNav();
+      if (targetRoute === 'f1') {
+        renderDynamicHeroPanel();
+      }
+      window.scrollTo(0, 0);
+    }
+
+    window.addEventListener('hashchange', router);
+
+    /* ==========================================
+       2. HEADER NAV & AUTH CONTROLLER
+       ========================================== */
+    function updateHeaderNav() {
+      const isLoggedIn = localStorage.getItem('isLoggedIn') === 'true';
+      const navAuthContainer = document.getElementById('nav-auth-container');
+
+      if (!navAuthContainer) return;
+
+      if (isLoggedIn) {
+        navAuthContainer.innerHTML = `
+          <a href="#f2" class="px-4 py-2 rounded-lg bg-purple-600 hover:bg-purple-700 text-white text-xs font-semibold shadow-md transition-all">
+            Open Workspaces →
+          </a>
+          <button onclick="handleLogout()" class="px-3 py-2 text-xs font-medium text-slate-400 hover:text-white transition-colors cursor-pointer">
+            Log Out
+          </button>
+        `;
+      } else {
+        navAuthContainer.innerHTML = `
+          <a href="#f6" class="px-4 py-2 rounded-lg bg-white/5 hover:bg-white/10 border border-white/10 text-xs font-medium text-slate-200 transition-all">
+            Log In
+          </a>
+          <a href="#f5" class="px-4 py-2 rounded-lg btn-neon text-xs font-semibold shadow-md">
+            Sign Up
+          </a>
+        `;
+      }
+    }
+
+    /* CLEAN DUAL-STATE HERO PANEL (NO POPUP BUTTONS ON WELCOME BACK) */
+    function renderDynamicHeroPanel() {
+      const heroPanel = document.getElementById('hero-right-panel');
+      const leftCtaButton = document.getElementById('hero-main-cta');
+      const isLoggedIn = localStorage.getItem('isLoggedIn') === 'true';
+
+      if (leftCtaButton) {
+        if (isLoggedIn) {
+          leftCtaButton.innerHTML = `<span>Open Workspaces</span> <span>→</span>`;
+          leftCtaButton.href = '#f2';
+          leftCtaButton.style.display = 'inline-flex';
+        } else {
+          leftCtaButton.style.display = 'none';
+        }
+      }
+
+      if (!heroPanel) return;
+
+      if (isLoggedIn) {
+        // LOGGED-IN: Clean Welcome Back Card with no popup buttons
+        heroPanel.innerHTML = `
+          <div class="enterprise-card p-8 rounded-2xl shadow-2xl space-y-6">
+            <div class="flex items-center justify-between border-b border-white/10 pb-4">
+              <div class="flex items-center space-x-2">
+                <span class="w-2.5 h-2.5 rounded-full bg-emerald-400 animate-pulse"></span>
+                <span class="text-xs font-mono text-emerald-300 uppercase tracking-wider">Session Active</span>
+              </div>
+              <span class="text-[11px] font-mono text-slate-500">FastAPI Ready</span>
+            </div>
+
+            <div class="space-y-2">
+              <h3 class="text-2xl font-bold text-white tracking-tight">Welcome Back</h3>
+              <p class="text-xs text-slate-400 leading-relaxed">
+                Your computer vision session and PyTorch pipelines are active and synchronized.
+              </p>
+            </div>
+
+            <div class="p-4 rounded-xl bg-purple-950/40 border border-purple-500/20 space-y-2 text-xs font-mono">
+              <div class="flex justify-between text-slate-400">
+                <span>MODEL ENGINE</span>
+                <span class="text-purple-300 font-bold">PyTorch Loaded</span>
+              </div>
+              <div class="flex justify-between text-slate-400">
+                <span>GEMINI PIPELINE</span>
+                <span class="text-purple-300 font-bold">Online</span>
+              </div>
+            </div>
+          </div>`;
+      } else {
+        // LOGGED-OUT: Clean Embedded Login / Access Prompt
+        heroPanel.innerHTML = `
+          <div class="enterprise-card p-8 rounded-2xl shadow-2xl space-y-6">
+            <div class="flex items-center justify-between border-b border-white/10 pb-4">
+              <div class="flex items-center space-x-2">
+                <span class="w-2.5 h-2.5 rounded-full bg-purple-400 animate-pulse"></span>
+                <span class="text-xs font-mono text-purple-300 uppercase tracking-wider">AI System Online</span>
+              </div>
+              <span class="text-[11px] font-mono text-slate-500">v2.4 Engine</span>
+            </div>
+
+            <div class="space-y-2">
+              <h3 class="text-xl font-bold text-white tracking-tight">Access Console</h3>
+              <p class="text-xs text-slate-400 leading-relaxed">
+                Log in or register to access real-time computer vision telemetry and style synthesis.
+              </p>
+            </div>
+
+            <div class="space-y-3 pt-2">
+              <a href="#f6" class="w-full py-3 px-4 rounded-xl btn-neon text-xs font-bold flex items-center justify-center gap-2 shadow-lg transition-all">
+                <span>Log In to Workspace</span>
+                <span>→</span>
+              </a>
+              <a href="#f5" class="w-full py-2.5 rounded-xl bg-white/5 hover:bg-white/10 border border-white/10 text-xs font-semibold text-slate-200 block text-center transition-all">
+                Create Account
+              </a>
+            </div>
+          </div>`;
+      }
+    }
+
+    function initTypewriterEffect() {
+      const targetElement = document.getElementById('hero-typewriter-text');
+      if (!targetElement) return;
+
+      const phrases = [
+        'Analyze real-time <span class="text-purple-400 font-normal">emotional expressions</span> frame-by-frame.',
+        'Compute 68-keypoint <span class="text-purple-400 font-normal">facial landmark geometry</span> automatically.',
+        'Receive personalized <span class="text-purple-400 font-normal">grooming & style</span> recommendations via Gemini AI.'
+      ];
+
+      let phraseIndex = 0;
+      let charIndex = 0;
+      let isDeleting = false;
+
+      function type() {
+        const currentPhrase = phrases[phraseIndex];
+        if (isDeleting) { charIndex--; } else { charIndex++; }
+        let visibleText = currentPhrase.substring(0, charIndex);
+
+        if ((visibleText.match(/<span/g) || []).length > (visibleText.match(/<\/span>/g) || []).length) {
+          visibleText += '</span>';
+        }
+
+        targetElement.innerHTML = visibleText;
+        let nextStepDelay = 60;
+
+        if (!isDeleting && charIndex === currentPhrase.length) {
+          nextStepDelay = 5500;
+          isDeleting = true;
+        } else if (isDeleting && charIndex === 0) {
+          isDeleting = false;
+          phraseIndex = (phraseIndex + 1) % phrases.length;
+          nextStepDelay = 500;
+        } else if (isDeleting) {
+          nextStepDelay = 25;
+        }
+
+        setTimeout(type, nextStepDelay);
+      }
+      type();
+    }
+
+    /* DIRECT REDIRECTION ON LOGIN SUBMIT */
+    function handleLoginSubmit(e) {
+      e.preventDefault();
+      localStorage.setItem('isLoggedIn', 'true');
+      
+      if (pendingRedirectView) {
+        window.location.hash = `#${pendingRedirectView}`;
+        pendingRedirectView = null;
+      } else {
+        window.location.hash = '#f3';
+      }
+    }
+
+    function handleSignupSubmit(e) {
+      e.preventDefault();
+      localStorage.setItem('isLoggedIn', 'true');
+      
+      if (pendingRedirectView) {
+        window.location.hash = `#${pendingRedirectView}`;
+        pendingRedirectView = null;
+      } else {
+        window.location.hash = '#f3';
+      }
+    }
+
+    function handleLogout() {
+      localStorage.removeItem('isLoggedIn');
+      pendingRedirectView = null;
+      window.location.hash = '#f1';
+      router();
+    }
+
+    /* ==========================================
+       3. IMAGE COMPRESSION & STORAGE SYNC
+       ========================================== */
+    function compressImage(base64Str, maxWidth = 800, quality = 0.8) {
+      return new Promise((resolve) => {
+        const img = new Image();
+        img.src = base64Str;
+        img.onload = () => {
+          let width = img.width;
+          let height = img.height;
+          if (width > height) {
+            if (width > maxWidth) {
+              height = Math.round((height * maxWidth) / width);
+              width = maxWidth;
+            }
+          } else {
+            if (height > maxWidth) {
+              width = Math.round((width * maxWidth) / height);
+              height = maxWidth;
+            }
+          }
+          const canvas = document.createElement('canvas');
+          canvas.width = width;
+          canvas.height = height;
+          const ctx = canvas.getContext('2d');
+          ctx.drawImage(img, 0, 0, width, height);
+          resolve(canvas.toDataURL('image/jpeg', quality));
+        };
+      });
+    }
+
+    async function handleImageUpload(e) {
+      const file = e.target.files[0];
+      if (!file) return;
+
+      if (!file.type.startsWith('image/')) {
+        triggerErrorToast('Unsupported File Format', 'Please upload a valid image file (JPEG, PNG, WEBP).');
+        return;
+      }
+
+      if (file.size > 10 * 1024 * 1024) {
+        triggerErrorToast('File Too Large', 'Please upload an image smaller than 10MB.');
+        return;
+      }
+
+      const reader = new FileReader();
+      reader.onload = async function(event) {
+        const compressedImage = await compressImage(event.target.result, 800, 0.8);
+        localStorage.setItem('activeFaceSession', compressedImage);
+        processImageSrc(compressedImage, 'AI GEOMETRY SCANNER ACTIVE');
+      };
+      reader.readAsDataURL(file);
+    }
+
+    function processImageSrc(src, statusText) {
+      const previewF3 = document.getElementById('uploaded-image-preview-f3');
+      const placeholderF3 = document.getElementById('camera-placeholder-f3');
+      const overlayF3 = document.getElementById('live-overlay-f3');
+
+      const previewF4 = document.getElementById('uploaded-image-preview-f4');
+      const placeholderF4 = document.getElementById('scanner-placeholder-f4');
+      const scannerLineF4 = document.getElementById('scanner-line-f4');
+      const statusTagF4 = document.getElementById('status-tag-f4');
+
+      if (previewF3) {
+        previewF3.src = src;
+        previewF3.classList.remove('hidden');
+        if (placeholderF3) placeholderF3.classList.add('hidden');
+        if (overlayF3) overlayF3.classList.remove('hidden');
+      }
+
+      if (previewF4) {
+        previewF4.src = src;
+        previewF4.classList.remove('hidden');
+        if (placeholderF4) placeholderF4.classList.add('hidden');
+        if (scannerLineF4) scannerLineF4.classList.remove('hidden');
+        if (statusTagF4) {
+          statusTagF4.classList.remove('hidden');
+          statusTagF4.classList.add('flex');
+        }
+
+        setTimeout(() => {
+          document.getElementById('face-shape-label').innerText = 'Oval / Slightly Oval';
+          document.getElementById('face-shape-label').className = 'text-white font-bold text-xl';
+          document.getElementById('jawline-val').innerText = '124°';
+          document.getElementById('jawline-bar').style.width = '88%';
+          document.getElementById('cheek-val').innerText = '0.86';
+          document.getElementById('cheek-bar').style.width = '82%';
+          document.getElementById('match-val').innerText = '96.4%';
+          document.getElementById('match-bar').style.width = '96.4%';
+        }, 500);
+      }
+    }
+
+    function resetTelemetryView() {
+      localStorage.removeItem('activeFaceSession');
+      window.location.reload();
+    }
+
+    function resetScannerView() {
+      localStorage.removeItem('activeFaceSession');
+      window.location.reload();
+    }
+
+    function triggerErrorToast(title, desc) {
+      document.getElementById('error-title').innerText = title;
+      document.getElementById('error-desc').innerText = desc;
+      const toast = document.getElementById('error-toast');
+      toast.classList.remove('hidden');
+      setTimeout(() => dismissToast(), 5000);
+    }
+
+    function dismissToast() {
+      document.getElementById('error-toast').classList.add('hidden');
+    }
+
+    /* ==========================================
+       4. CHAT HANDLERS (f3 & f4)
+       ========================================== */
+    function handleChatSubmitF3(e) {
+      e.preventDefault();
+      const input = document.getElementById('chat-input-f3');
+      const container = document.getElementById('chat-messages-f3');
+      const text = input.value.trim();
+      if (!text) return;
+
+      container.innerHTML += `<div class="flex items-start justify-end space-x-3 max-w-[88%] ml-auto"><div class="btn-neon text-white p-3.5 rounded-2xl rounded-tr-none shadow-md font-medium">${text}</div></div>`;
+      input.value = '';
+      container.scrollTop = container.scrollHeight;
+
+      setTimeout(() => {
+        container.innerHTML += `<div class="flex items-start space-x-3 max-w-[88%]"><div class="w-6 h-6 rounded-lg bg-purple-950 border border-purple-500/30 flex items-center justify-center text-[10px] font-bold text-purple-300 shrink-0">EA</div><div class="bg-[#05050a] border border-white/10 p-3.5 rounded-2xl rounded-tl-none text-slate-200 shadow-md">Evaluating query against active frame metrics... Primary expression remains Focused / Neutral.</div></div>`;
+        container.scrollTop = container.scrollHeight;
+      }, 700);
+    }
+
+    function handleChatSubmitF4(e) {
+      e.preventDefault();
+      const input = document.getElementById('chat-input-f4');
+      const container = document.getElementById('chat-messages-f4');
+      const text = input.value.trim();
+      if (!text) return;
+
+      container.innerHTML += `<div class="flex items-start justify-end space-x-3 max-w-[88%] ml-auto"><div class="btn-neon text-white p-3.5 rounded-2xl rounded-tr-none shadow-md font-medium">${text}</div></div>`;
+      input.value = '';
+      container.scrollTop = container.scrollHeight;
+
+      setTimeout(() => {
+        container.innerHTML += `<div class="flex items-start space-x-3 max-w-[88%]"><div class="w-6 h-6 rounded-lg bg-purple-950 border border-purple-500/30 flex items-center justify-center text-[10px] font-bold text-purple-300 shrink-0">FA</div><div class="bg-[#05050a] border border-white/10 p-3.5 rounded-2xl rounded-tl-none text-slate-200 shadow-md">Evaluating query against active facial geometry... Based on structural symmetry, rectangular or square optical frames will add contrast.</div></div>`;
+        container.scrollTop = container.scrollHeight;
+      }, 700);
+    }
+
+    // INITIALIZATION ON DOM LOAD
+    document.addEventListener('DOMContentLoaded', () => {
+      router();
+      initTypewriterEffect();
+      
+      const activeSessionImage = localStorage.getItem('activeFaceSession');
+      if (activeSessionImage) {
+        processImageSrc(activeSessionImage, 'REUSED SESSION CAPTURE');
+      }
+    });
+  </script>
+  <script src="spa.js"></script>
+</body>
+</html>
