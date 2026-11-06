@@ -6,3 +6,4 @@ google-genai
 requests
 numpy
 opencv-python-headless
+pillow
